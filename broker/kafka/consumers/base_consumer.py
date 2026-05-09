@@ -35,5 +35,5 @@ class BaseConsumer(Generic[T]):
         finally:
             await self.consumer.stop()
 
-    async def process_message(self, message):
+    async def process_message(self, event: T):
         raise NotImplementedError
