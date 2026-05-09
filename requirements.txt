@@ -2,3 +2,5 @@ aiokafka
 fastapi
 pydantic
 sqlalchemy
+dependency-injector
+uvicorn
