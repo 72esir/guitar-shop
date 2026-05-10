@@ -1,7 +1,9 @@
 aiokafka
 fastapi
 pydantic
+pydantic_settings
 sqlalchemy
 dependency-injector
 uvicorn
 redis
+asyncpg
