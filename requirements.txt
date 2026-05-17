@@ -7,3 +7,7 @@ dependency-injector
 uvicorn
 redis
 asyncpg
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+email-validator
