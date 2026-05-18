@@ -25,6 +25,26 @@ services:
     ports:
       - "5432:5432"
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  ml_worker:
+    build:
+      context: .
+      dockerfile: ml_worker/Dockerfile
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_HOST=postgres
+      - DB_NAME=${DB_NAME:-guitar_shop_db}
+    depends_on:
+      - redis
+      - postgres
+
   notifications_service:
     build: 
       context: .
