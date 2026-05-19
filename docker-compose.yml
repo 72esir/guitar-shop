@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   redpanda:
     image: docker.redpanda.com/redpandadata/redpanda:latest
@@ -72,10 +74,18 @@ services:
       - DB_HOST=postgres
       - DB_NAME=${DB_NAME:-guitar_shop_db}
       - KAFKA_BOOTSTRAP_SERVERS=redpanda:29092
-    ports:
-      - "8002:8002"
     depends_on:
-      redpanda:
-        condition: service_started
-      postgres:
-        condition: service_healthy
+      - redpanda
+      - postgres
+    deploy:
+      replicas: 2 # СРАЗУ 2 КОПИИ сервиса заказов для балансировки
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - orders_service
+      # - products_service #пока нет раскомментить потом
