@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from orders_service.app.containers.container import Container
 from orders_service.app.api.orders_routes import router as orders_router
 from orders_service.infra.database.db_config import Base
+from prometheus_fastapi_instrumentator import Instrumentator
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -23,6 +24,8 @@ async def lifespan(app: FastAPI):
     await kafka_client.stop()
 
 app = FastAPI(title="Orders Service", lifespan=lifespan)
+
+Instrumentator().instrument(app).expose(app)
 
 app.include_router(orders_router, prefix="/api")
 

@@ -3,10 +3,14 @@ from sqlalchemy.orm import Session
 
 from app import schemas, models, database
 
+from prometheus_fastapi_instrumentator import Instrumentator
+
 # Создаем таблицы в БД (если их нет)
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI()
+
+Instrumentator().instrument(app).expose(app)
 
 
 @app.post("/products/", response_model=schemas.Product)

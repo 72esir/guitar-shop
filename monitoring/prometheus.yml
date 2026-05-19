@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 5s # интервал сбора
+
+scrape_configs:
+  # Настройка для orders_service
+  # dns_sd_configs = метрики СО ВСЕХ реплик сервиса
+  - job_name: "orders_service"
+    dns_sd_configs:
+      - names: ["orders_service"]
+        type: "A"
+        port: 8002
+
+  - job_name: "products_service"
+    static_configs:
+      - targets: ["products_service:8000"]
+
+  - job_name: "auth_service"
+    static_configs:
+      - targets: ["auth_service:8000"]
