@@ -5,10 +5,10 @@ broker_url = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
 result_backend = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
 
 app = Celery(
-    "ml_worker",
+    "recs_worker",
     broker=broker_url,
     backend=result_backend,
-    include=["ml_worker.tasks"]
+    include=["recs_worker.tasks"]
 )
 
 app.conf.update(

@@ -24,16 +24,20 @@ services:
       POSTGRES_DB: ${DB_NAME:-guitar_shop_db}
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
 
-  ml_worker:
+  recs_worker:
+    restart: always
     build:
       context: .
-      dockerfile: ml_worker/Dockerfile
+      dockerfile: recs_worker/Dockerfile
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -42,10 +46,13 @@ services:
       - DB_HOST=postgres
       - DB_NAME=${DB_NAME:-guitar_shop_db}
     depends_on:
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
   notifications_service:
+    restart: always
     build: 
       context: .
       dockerfile: notifications_service/Dockerfile
@@ -55,6 +62,7 @@ services:
       - redpanda
 
   orders_service:
+    restart: always
     build:
       context: .
       dockerfile: orders_service/Dockerfile
@@ -67,5 +75,7 @@ services:
     ports:
       - "8002:8002"
     depends_on:
-      - redpanda
-      - postgres
+      redpanda:
+        condition: service_started
+      postgres:
+        condition: service_healthy
