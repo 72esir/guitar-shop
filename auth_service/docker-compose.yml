@@ -1,0 +1,17 @@
+auth_service:
+  build:
+    context: ./auth_service
+  container_name: auth_service
+  ports:
+    - "8003:8000"
+  depends_on:
+    - postgres
+  environment:
+    DB_HOST: postgres
+    DB_PORT: 5432
+    DB_NAME: auth_db
+    DB_USER: postgres
+    DB_PASSWORD: postgres
+    JWT_SECRET_KEY: SUPER_SECRET_KEY
+    JWT_ALGORITHM: HS256
+    ACCESS_TOKEN_EXPIRE_MINUTES: 30
