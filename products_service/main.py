@@ -4,6 +4,7 @@ from app.containers.gateway import Container
 from app.api.product_router import router as product_router
 from app.infra.db import engine
 from app.infra.model import Base
+from prometheus_fastapi_instrumentator import Instrumentator
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -13,10 +14,14 @@ async def lifespan(app: FastAPI):
 
 def create_app() -> FastAPI:
     container = Container()
-    app = FastAPI(title="Clean Products Service", lifespan=lifespan)
+    app = FastAPI(
+        title="Clean Products Service", 
+        lifespan=lifespan, 
+        docs_url="/api/v1/guitars/docs",
+        openapi_url="/api/v1/guitars/openapi.json"
+        )
     app.container = container
     app.include_router(product_router)
-from prometheus_fastapi_instrumentator import Instrumentator
 
     return app
 

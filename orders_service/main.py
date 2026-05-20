@@ -23,7 +23,12 @@ async def lifespan(app: FastAPI):
     
     await kafka_client.stop()
 
-app = FastAPI(title="Orders Service", lifespan=lifespan)
+app = FastAPI(
+    title="Orders Service", 
+    lifespan=lifespan ,
+    docs_url="/api/orders/docs",
+    openapi_url="/api/orders/openapi.json"
+    )
 
 Instrumentator().instrument(app).expose(app)
 

@@ -8,6 +8,8 @@ from prometheus_fastapi_instrumentator import Instrumentator
 app = FastAPI(
     title="Auth Service",
     version="1.0.0",
+    docs_url="/auth/docs",
+    openapi_url="/auth/openapi.json"
 )
 
 Instrumentator().instrument(app).expose(app)
