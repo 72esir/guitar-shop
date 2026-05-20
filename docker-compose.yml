@@ -75,10 +75,34 @@ services:
       - DB_NAME=${DB_NAME:-guitar_shop_db}
       - KAFKA_BOOTSTRAP_SERVERS=redpanda:29092
     depends_on:
-      - redpanda
-      - postgres
+      redpanda:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     deploy:
       replicas: 2 # СРАЗУ 2 КОПИИ сервиса заказов для балансировки
+
+  products_service:
+    restart: always
+    build:
+      context: .
+      dockerfile: products_service/Dockerfile
+    ports:
+      - "8000:8000"
+    working_dir: /app/products_service
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_HOST=postgres
+      - DB_NAME=${DB_NAME:-guitar_shop_db}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
   nginx:
     image: nginx:latest
