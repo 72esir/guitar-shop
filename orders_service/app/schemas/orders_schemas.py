@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from enum import Enum
 
-from orders_service.app.schemas.order_items_schema import OrderItem
+from orders_service.app.schemas.order_items_schema import OrderItem, OrderItemCreate
 
 class OrderStatus(str, Enum):
     CREATED = "created"      
@@ -11,11 +11,12 @@ class OrderStatus(str, Enum):
 
 class OrderCreate(BaseModel):
     username: str
-    items: list[OrderItem]
+    items: list[OrderItemCreate]
     status: OrderStatus = OrderStatus.CREATED
 
 class Order(OrderCreate):
     id: int
+    items: list[OrderItem]
 
 class OrderUpdate(BaseModel):
     status: OrderStatus

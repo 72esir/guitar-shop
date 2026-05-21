@@ -19,7 +19,9 @@ class OrdersRepository:
         for item in order_data.items:
             new_order.items.append(
                 OrderItemORM(
-                    product_id=item.id,
+                    product_id=item.product_id,
+                    title=item.title,
+                    sku=item.sku,
                     price=item.price,
                     quantity=item.quantity
                 )
@@ -64,7 +66,9 @@ class OrdersRepository:
     async def add_item_to_order(self, item_data: OrderItem, order_id: int) -> int:
         new_item = OrderItemORM(
             order_id=order_id,
-            product_id=item_data.id,
+            product_id=item_data.product_id,
+            title=item_data.title,
+            sku=item_data.sku,
             price=item_data.price,
             quantity=item_data.quantity
         )

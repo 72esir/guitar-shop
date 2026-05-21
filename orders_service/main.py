@@ -7,20 +7,20 @@ from orders_service.app.api.orders_routes import router as orders_router
 from orders_service.infra.database.db_config import Base
 from prometheus_fastapi_instrumentator import Instrumentator
 
+container = Container()
+container.wire(modules=["orders_service.app.api.orders_routes"])
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    container = Container()
-    container.wire(modules=["orders_service.app.api.orders_routes"])
-    
     db = container.db()
     async with db._engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     kafka_client = container.kafka_client()
     await kafka_client.start()
-    
+
     yield
-    
+
     await kafka_client.stop()
 
 app = FastAPI(
