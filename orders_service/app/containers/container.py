@@ -1,7 +1,11 @@
 from dependency_injector import providers, containers
 from broker.kafka.client.kafka_client import KafkaClient
 from orders_service.app.repositories.orders_repo import OrdersRepository
+from orders_service.app.use_cases.delete_order_use_case import DeleteOrderUseCase
 from orders_service.app.use_cases.create_order_use_case import CreateOrderUseCase
+from orders_service.app.use_cases.get_order_use_case import GetOrderUseCase
+from orders_service.app.use_cases.get_orders_use_case import GetOrdersUseCase
+from orders_service.app.use_cases.update_order_use_case import UpdateOrderUseCase
 from orders_service.config import settings
 from orders_service.infra.database.db_config import Database
 from orders_service.infra.kafka.producers.order_created_producer import OrderCreatedProducer
@@ -42,4 +46,24 @@ class Container(containers.DeclarativeContainer):
         CreateOrderUseCase,
         repo=orders_repo,
         producer=order_created_producer,
+    )
+
+    get_order_use_case = providers.Factory(
+        GetOrderUseCase,
+        repo=orders_repo,
+    )
+
+    get_orders_use_case = providers.Factory(
+        GetOrdersUseCase,
+        repo=orders_repo,
+    )
+
+    delete_order_use_case = providers.Factory(
+        DeleteOrderUseCase,
+        repo=orders_repo,
+    )
+
+    update_order_use_case = providers.Factory(
+        UpdateOrderUseCase,
+        repo=orders_repo,
     )

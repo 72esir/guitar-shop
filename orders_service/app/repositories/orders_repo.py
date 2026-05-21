@@ -1,3 +1,4 @@
+from typing import Sequence
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -54,6 +55,11 @@ class OrdersRepository:
         query = select(OrderORM).where(OrderORM.id == order_id).options(selectinload(OrderORM.items))
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
+
+    async def get_orders(self) -> Sequence[OrderORM]:
+        query = select(OrderORM)
+        result = await self.session.execute(query)
+        return result.scalars().all()
 
     async def add_item_to_order(self, item_data: OrderItem, order_id: int) -> int:
         new_item = OrderItemORM(
