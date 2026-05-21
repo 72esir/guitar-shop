@@ -39,6 +39,7 @@ async def get_order(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/", status_code=200)
+@inject
 async def get_orders(
     use_case: GetOrdersUseCase = Depends(Provide[Container.get_orders_use_case]),
 ):
@@ -61,6 +62,7 @@ async def delete_order(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/{order_id}", status_code=200)
+@inject
 async def update_order(
     order_id: int,
     update_data: OrderUpdate,
