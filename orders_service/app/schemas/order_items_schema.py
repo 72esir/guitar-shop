@@ -1,11 +1,39 @@
+import enum
+from typing import Optional
 from pydantic import BaseModel, Field
 
+class GuitarType(str, enum.Enum):
+    ELECTRIC = "электрогитара"
+    ACOUSTIC = "акустическая гитара"
+    CLASSICAL = "классическая гитара"
+    BASS = "бас гитара"
+
+class PickupConfig(str, enum.Enum):
+    SSS = "SSS"
+    HH = "HH"
+    HSS = "HSS"
+    HSH = "HSH"
+    SS = "SS"
+    P90 = "P90"
+    PIEZO = "piezo"
+    NONE = "none"
+
 class OrderItemCreate(BaseModel):
-    product_id: int = Field(..., description="ID купленной гитары из сервиса продуктов")
-    sku: str = Field(..., description="Артикул товара на момент покупки")
-    title: str = Field(..., description="Название гитары на момент оформления заказа")
-    price: float = Field(..., description="Цена за штуку")
-    quantity: int = Field(1, ge=1, description="Количество товара в заказе, минимум 1")
+    product_id: int
+    sku: str
+    title: str
+    brand: str
+    price: float
+    quantity: int = Field(1, ge=1)
+
+    type: GuitarType
+    body_wood: str
+    neck_wood: str
+    fretboard_wood: str
+    fret_count: int
+    scale_length: float
+    pickup_config: PickupConfig
+    image_url: Optional[str] = None
 
 class OrderItem(OrderItemCreate):
     id: int

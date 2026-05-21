@@ -20,10 +20,19 @@ class OrdersRepository:
             new_order.items.append(
                 OrderItemORM(
                     product_id=item.product_id,
-                    title=item.title,
                     sku=item.sku,
+                    title=item.title,
+                    brand=item.brand,
                     price=item.price,
-                    quantity=item.quantity
+                    quantity=item.quantity,
+                    type=item.type,
+                    body_wood=item.body_wood,
+                    neck_wood=item.neck_wood,
+                    fretboard_wood=item.fretboard_wood,
+                    fret_count=item.fret_count,
+                    scale_length=item.scale_length,
+                    pickup_config=item.pickup_config,
+                    image_url=item.image_url
                 )
             )
 
@@ -59,7 +68,7 @@ class OrdersRepository:
         return result.scalar_one_or_none()
 
     async def get_orders(self) -> Sequence[OrderORM]:
-        query = select(OrderORM)
+        query = select(OrderORM).options(selectinload(OrderORM.items))
         result = await self.session.execute(query)
         return result.scalars().all()
 
@@ -67,10 +76,19 @@ class OrdersRepository:
         new_item = OrderItemORM(
             order_id=order_id,
             product_id=item_data.product_id,
-            title=item_data.title,
             sku=item_data.sku,
+            title=item_data.title,
+            brand=item_data.brand,
             price=item_data.price,
-            quantity=item_data.quantity
+            quantity=item_data.quantity,
+            type=item_data.type,
+            body_wood=item_data.body_wood,
+            neck_wood=item_data.neck_wood,
+            fretboard_wood=item_data.fretboard_wood,
+            fret_count=item_data.fret_count,
+            scale_length=item_data.scale_length,
+            pickup_config=item_data.pickup_config,
+            image_url=item_data.image_url
         )
         self.session.add(new_item)
         await self.session.commit()

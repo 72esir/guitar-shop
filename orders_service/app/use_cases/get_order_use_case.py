@@ -15,14 +15,7 @@ class GetOrderUseCase:
         if order is None:
             raise HTTPException(status_code=404, detail="Order not found")
 
-        items = [OrderItem(
-            product_id = item.id,
-            sku = item.sku,
-            title = item.title,
-            price = item.price,
-            quantity = item.quantity,
-            id = item.id
-        ) for item in order.items]
+        items = [OrderItem.model_validate(item) for item in order.items]
 
         order_dto = Order(
             username=order.username,

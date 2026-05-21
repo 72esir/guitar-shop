@@ -17,6 +17,8 @@ class OrderCreate(BaseModel):
 class Order(OrderCreate):
     id: int
     items: list[OrderItem]
+    
+    model_config = {"from_attributes": True}
 
 class OrderUpdate(BaseModel):
     status: OrderStatus
