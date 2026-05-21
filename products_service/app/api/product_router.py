@@ -4,9 +4,24 @@ from dependency_injector.wiring import inject, Provide
 from app.containers.gateway import Container
 from app.repositories.product_repo import ProductRepository
 from app.schemas.product_DTOs import ProductResponse, ProductCreate, ProductUpdate
-from app.use_cases.product import UpdateProductUseCase, DeleteProductUseCase, GetProductUseCase
+from app.use_cases.product import UpdateProductUseCase, DeleteProductUseCase, GetProductUseCase, GetRecommendationsUseCase, TriggerRecommendationUpdateUseCase
 
 router = APIRouter(prefix="/api/v1/guitars", tags=["Guitars"])
+
+@router.get("/{product_id}/recommendations", response_model=List[ProductResponse])
+@inject
+async def get_recommendations(
+    product_id: int,
+    use_case: GetRecommendationsUseCase = Depends(Provide[Container.get_recs_use_case])
+):
+    return await use_case.execute(product_id)
+
+@router.post("/recompute-recommendations")
+@inject
+async def trigger_recommendations(
+    use_case: TriggerRecommendationUpdateUseCase = Depends(Provide[Container.trigger_recs_use_case])
+):
+    return await use_case.execute()
 
 @router.post("/", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
 @inject

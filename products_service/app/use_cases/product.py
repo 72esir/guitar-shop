@@ -1,8 +1,37 @@
 import json
-from typing import Optional
+from typing import Optional, List
 from redis.asyncio import Redis
 from app.repositories.product_repo import ProductRepository
 from app.schemas.product_DTOs import ProductResponse
+
+from celery import Celery
+from config import settings
+
+class GetRecommendationsUseCase:
+    def __init__(self, product_repo: ProductRepository, redis_recs: Redis):
+        self.product_repo = product_repo
+        self.redis_recs = redis_recs
+
+    async def execute(self, product_id: int) -> List[ProductResponse]:
+        recs_data = await self.redis_recs.get(f"recs:product:{product_id}")
+        if not recs_data:
+            return []
+        
+        product_ids = json.loads(recs_data)
+        products = []
+        for p_id in product_ids:
+            product = await self.product_repo.get_by_id(p_id)
+            if product:
+                products.append(ProductResponse.model_validate(product))
+        return products
+
+class TriggerRecommendationUpdateUseCase:
+    def __init__(self):
+        self.celery_app = Celery("recs_worker", broker=settings.celery_broker_url)
+
+    async def execute(self):
+        self.celery_app.send_task("recs_worker.tasks.calculate_recommendations")
+        return {"status": "Calculation task sent to worker"}
 
 class GetProductUseCase:
     def __init__(self, product_repo: ProductRepository, redis_client: Redis):

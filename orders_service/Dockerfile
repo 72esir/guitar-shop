@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 WORKDIR /app
-COPY requirements.txt .
+COPY orders_service/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY broker/ ./broker/
 COPY event_contracts/ ./event_contracts/

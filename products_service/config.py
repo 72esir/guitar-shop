@@ -11,6 +11,11 @@ class Settings(BaseSettings):
     #Redis
     redis_host: str = "localhost"
     redis_port: int = 6379
+    redis_db_recs: int = 1
+
+    @property
+    def celery_broker_url(self) -> str:
+        return f"redis://{self.redis_host}:{self.redis_port}/0"
 
     @property
     def db_url(self) -> str:
